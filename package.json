@@ -1,0 +1,25 @@
+{
+  "name": "contentloader",
+  "version": "1.0.0",
+  "description": "Content reader service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fakhrad/contentLoader.git"
+  },
+  "keywords": [
+    "Content",
+    "ContentLoader",
+    "Content",
+    "Query"
+  ],
+  "author": "Fakhreddin Rezaei",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fakhrad/contentLoader/issues"
+  },
+  "homepage": "https://github.com/fakhrad/contentLoader#readme"
+}
