@@ -203,8 +203,30 @@ const schema = new GraphQLSchema({
           },
           requests : {
             type : GraphQLList(RequestType),
+            args : {
+              category : {type : GraphQLString},
+              contenttype : {type : GraphQLString},
+              name : {type : GraphQLString}
+            },
             resolve : (root, args, context, info) => {
-              return Requests.find({}).exec();
+              var c= undefined, ct, st;
+              if (args.category)
+                  c = args.category;
+              if (args.contenttype)
+                  ct = args.contenttype;
+              var flt = {
+                  'sys.spaceId' : context.clientId,
+                  category : c ,
+                  contentType : ct
+              };
+              if (!args.name)
+                  delete flt.name;
+              if (!args.category)
+                  delete flt.category;
+              if (!args.contenttype)
+                  delete flt.contenttype;
+              console.log(flt);
+              return Requests.find(flt).exec();
             }
           },
           requestlist : {
@@ -231,7 +253,24 @@ const schema = new GraphQLSchema({
                 name : {type : GraphQLString}
               },
             resolve : (root, args, context, info) => {
-              return Contents.find({}).exec();
+              var c= undefined, ct, st;
+              if (args.category)
+                  c = args.category.split(',');
+              if (args.contentType)
+                  ct = args.contentType.split(',');
+              var flt = {
+                  'sys.spaceId' : req.spaceId,
+                  category : { $in : c} ,
+                  contentType : { $in : ct},
+              };
+              if (!args.name)
+                  delete flt.name;
+              if (!args.category)
+                  delete flt.category;
+              if (!args.contentType)
+                  delete flt.contentType;
+              console.log(flt);
+              return Contents.find(flt).exec();
             }
           },
           contentlist : {
