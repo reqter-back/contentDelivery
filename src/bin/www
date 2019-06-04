@@ -32,11 +32,7 @@ server.on('listening', onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function run()
-{
-  console.log('working...')
-}
-setInterval(run, 1000);
+
 function normalizePort(val) {
   var port = parseInt(val, 10);
 

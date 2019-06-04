@@ -2,8 +2,8 @@ const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 const broker = require('./serviceBroker');
 
-exports.uploadContent = function(req, res, next) {
-    broker.sendRPCMessage({spaceId : req.spaceid, userId : req.userId, body : req.body}, 'addcontentbyrequest').then((result)=>{
+exports.submitRequest = function(req, res, next) {
+    broker.sendRPCMessage({clientId : req.clientId, body : req.body}, 'submitrequest').then((result)=>{
         var obj = JSON.parse(result.toString('utf8'));
         if (!obj.success)
         {

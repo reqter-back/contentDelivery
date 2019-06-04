@@ -5,6 +5,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helmet = require('helmet');
 var compression = require('compression');
+var graphqlHTTP = require('express-graphql');
+var db = require('./db/init-db');
+var config = require('./config');
+const {schema} = require('./graphql/schema');
+var auth = require('./controllers/auth');
 
 var app = express();
 
@@ -12,11 +17,20 @@ app.use(compression()); //Compress all routes
 app.use(helmet());
 app.use(cors());
 
-var view = require('./routes/api');
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/api/v1', view);
+db();
+app.post('/graphql', auth.verifyToken, graphqlHTTP({
+    schema,
+    graphiql: false,
+    pretty : true
+}));
+   console.log(schema);
+app.get('/graphql', auth.verifyToken, graphqlHTTP({
+    schema,
+    graphiql: true,
+    pretty : true
+}));
 module.exports = app;
