@@ -14,6 +14,24 @@ const {
   GraphQLBoolean
 } = require("graphql");
 
+function buildTree(parent, list)
+{
+    if (parent == undefined || parent == null || list == undefined || (list != undefined && list.length == 0))
+        return;
+    console.log('1');
+    parent.items = [];
+    for(i = 0; i < list.length;i++)
+    {
+      var cat =list[i];
+      if (cat.parentId == parent.id)
+      {
+          parent.items.push(cat);
+          buildTree(cat, list);
+      }
+      cat.longDesc = undefined;
+    }
+}
+
 const MultiLangItemType = new GraphQLObjectType({
     name : "MultiLangItemType",
     fields : {
@@ -60,6 +78,7 @@ const CategroyType = new GraphQLObjectType({
         code : {type:GraphQLString},
         longDesc : {type : MultiLangItemType},
         image : {type : MultiLangItemType},
+        items : {type : GraphQLList(GraphQLJSONObject)},
         parentId : { type: GraphQLString},
     }
   });
@@ -188,8 +207,22 @@ const schema = new GraphQLSchema({
           },
           categories : {
             type : GraphQLList(CategroyType),
-            resolve : (root, args, context, info) => {
-              return Categories.find({}).exec();
+            resolve : async(root, args, context, info) => {
+              var rootc = [];
+              var cts = await Categories.find({}).exec();
+                console.log(cts);
+                for(i = 0; i < cts.length;i++)
+                {
+                  var cat =cts[i];
+                  if (cat.parentId === undefined || cat.parentId === null)
+                  {
+                      rootc.push(cat);
+                      buildTree(cat, cts);
+                  }
+                  cat.longDesc = undefined;
+                }
+
+                return rootc;
             }
           },
           category : {
@@ -308,7 +341,12 @@ const schema = new GraphQLSchema({
             }
           }
         }
-    })
+    }),
+    // mutation : {
+    //   // submitrequest : (parent, {link, requestdata}, context, info)=>{
+        
+    //   // }
+    // }
 });
 exports.schema = schema;
 
