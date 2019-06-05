@@ -18,18 +18,14 @@ function buildTree(parent, list)
 {
     if (parent == undefined || parent == null || list == undefined || (list != undefined && list.length == 0))
         return;
-    console.log('1');
     parent.items = [];
-    for(i = 0; i < list.length;i++)
-    {
-      var cat =list[i];
-      if (cat.parentId == parent.id)
-      {
-          parent.items.push(cat);
-          buildTree(cat, list);
-      }
-      cat.longDesc = undefined;
-    }
+    list.forEach(cat => {
+        if (cat.parentId == parent.id)
+        {
+            parent.items.push(cat);
+            buildTree(cat, list);
+        }
+    });
 }
 
 const MultiLangItemType = new GraphQLObjectType({
