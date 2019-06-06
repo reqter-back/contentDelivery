@@ -10,6 +10,7 @@ var db = require('./db/init-db');
 var config = require('./config');
 const {schema} = require('./graphql/schema');
 var auth = require('./controllers/auth');
+var ctrl = require('./controllers/uploadController');
 
 var app = express();
 
@@ -27,7 +28,7 @@ app.post('/graphql', auth.verifyToken, graphqlHTTP({
     graphiql: false,
     pretty : true
 }));
-   console.log(schema);
+app.post('/requests/submit', auth.verifyToken, ctrl.submitRequest);
 app.get('/graphql', auth.verifyToken, graphqlHTTP({
     schema,
     graphiql: true,

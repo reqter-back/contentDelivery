@@ -3,6 +3,7 @@ const Categories = require('../models/category');
 const ContentTypes = require('../models/contentType');
 const Requests = require('../models/request');
 const Contents = require('../models/content');
+var controller = require('../controllers/uploadController');
 const {GraphQLJSONObject} = require('graphql-type-json');
 const {
   GraphQLID,
@@ -11,7 +12,8 @@ const {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLInputObjectType
 } = require("graphql");
 
 function buildTree(parent, list)
@@ -183,6 +185,15 @@ const CategroyType = new GraphQLObjectType({
     }
   });
 
+const submitrequestinput = new GraphQLInputObjectType({
+  name: "submitrequestinput",
+  fields: {
+    request : {type: GraphQLJSONObject },
+    fields : {type : GraphQLJSONObject},
+    contentType : {type: GraphQLString},
+    category : {type: GraphQLString}
+  }
+});
 const schema = new GraphQLSchema({
     query : new GraphQLObjectType({
         name : "Query",
@@ -345,11 +356,20 @@ const schema = new GraphQLSchema({
           }
         }
     }),
-    // mutation : {
-    //   // submitrequest : (parent, {link, requestdata}, context, info)=>{
-        
-    //   // }
-    // }
+    mutation : new GraphQLObjectType({
+      name : "Mutation",
+      fields : {
+        submit :{
+          type: ContentType,
+          args: {
+              input: { type: submitrequestinput }
+          },
+          resolve:  async function (source, args) {
+            controller.submitRequest({clientId : "", body : args});
+          }
+        }
+    }
+    })
 });
 exports.schema = schema;
 
