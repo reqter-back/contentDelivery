@@ -241,8 +241,10 @@ const schema = new GraphQLSchema({
               var c= undefined, ct, st;
               if (args.category)
               {
-                  var cat = await Categories.findOne({"sys.link" : args.category}).exec()
-                  c =  cat.category;
+                console.log(args.category);
+                  var cat = await Categories.findOne({"sys.link" : args.category});
+                  console.log(cat);
+                  c =  cat._id;
               }
               if (args.contenttype)
                   ct = args.contenttype;
