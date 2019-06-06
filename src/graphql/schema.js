@@ -237,10 +237,13 @@ const schema = new GraphQLSchema({
               contenttype : {type : GraphQLString},
               name : {type : GraphQLString}
             },
-            resolve : (root, args, context, info) => {
+            resolve : async (root, args, context, info) => {
               var c= undefined, ct, st;
               if (args.category)
-                  c =  args.category;
+              {
+                  var cat = await Categories.findOne({"sys.link" : args.category}).exec()
+                  c =  cat.category;
+              }
               if (args.contenttype)
                   ct = args.contenttype;
               var flt = {
