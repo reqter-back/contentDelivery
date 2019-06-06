@@ -240,7 +240,7 @@ const schema = new GraphQLSchema({
             resolve : (root, args, context, info) => {
               var c= undefined, ct, st;
               if (args.category)
-                  c = args.category;
+                  c =  args.category;
               if (args.contenttype)
                   ct = args.contenttype;
               var flt = {
@@ -253,7 +253,7 @@ const schema = new GraphQLSchema({
               if (!args.category)
                   delete flt.category;
               if (!args.contenttype)
-                  delete flt.contenttype;
+                  delete flt.contentType;
               console.log(flt);
               return Requests.find(flt).exec();
             }
