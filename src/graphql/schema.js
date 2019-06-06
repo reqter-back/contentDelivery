@@ -101,6 +101,7 @@ const CategroyType = new GraphQLObjectType({
         title : {type : MultiLangItemType},
         description : {type : MultiLangItemType},
         contentType : {type: GraphQLString},
+        longDesc : {type : MultiLangItemType},
         category : {type: GraphQLString},
         thumbnail : {type : GraphQLList(MultiLangItemType)},
         attachments : {type : GraphQLList(MultiLangItemType)},
@@ -116,6 +117,7 @@ const CategroyType = new GraphQLObjectType({
         _id : {type : GraphQLID},
         sys : {type : SysType},
         title : {type : MultiLangItemType},
+        longDesc : {type : MultiLangItemType},
         description : {type : MultiLangItemType},
         contentType : {
             type: ContentTypeType,
