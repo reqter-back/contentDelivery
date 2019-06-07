@@ -365,6 +365,7 @@ const schema = new GraphQLSchema({
               input: { type: submitrequestinput }
           },
           resolve:  async function (source, args) {
+            console.log('start saving request : ' + args);
             controller.submitRequest({clientId : "", body : args});
           }
         }
