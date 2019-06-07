@@ -23,12 +23,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 db();
-app.post('/graphql', auth.verifyToken, graphqlHTTP({
+app.post('/graphql', graphqlHTTP({
     schema,
     graphiql: false,
     pretty : true
 }));
-app.post('/requests/submit', auth.verifyToken, ctrl.submitRequest);
 app.get('/graphql', auth.verifyToken, graphqlHTTP({
     schema,
     graphiql: true,
