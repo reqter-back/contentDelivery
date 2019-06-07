@@ -12,7 +12,8 @@ var content = new Schema({
     statusLog : [status],
     versions : [Object],
     contentType : {type: Schema.Types.ObjectId, ref: 'ContentType' , required : true},
-    category : {type: Schema.Types.ObjectId, ref: 'Category'}
+    category : {type: Schema.Types.ObjectId, ref: 'Category'},
+    userinfo : {type : Object}
 });
 
 module.exports = mongoose.model("Content", content);

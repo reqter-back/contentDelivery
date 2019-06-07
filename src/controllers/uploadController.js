@@ -21,7 +21,8 @@ exports.submitRequest = async function(req, cb) {
         category : request.category,
         requestId : request._id,
         status : "draft",
-        statusLog : []
+        statusLog : [],
+        userinfo : req.body.userinfo
     });
 
     var newStatus = {}
