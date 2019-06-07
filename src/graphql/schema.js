@@ -200,7 +200,7 @@ const schema = new GraphQLSchema({
           assets : {
             type : GraphQLList(AssetType),
             resolve : (root, args, context, info) => {
-              return Asset.find({}).exec();
+              return Asset.find({"sys.spaceId" : context.clientId}).exec();
             }
           },
           asset : {
@@ -217,7 +217,7 @@ const schema = new GraphQLSchema({
             type : GraphQLList(CategroyType),
             resolve : async(root, args, context, info) => {
               var rootc = [];
-              var cts = await Categories.find({}).exec();
+              var cts = await Categories.find({"sys.spaceId" : context.clientId}).exec();
                 console.log(cts);
                 for(i = 0; i < cts.length;i++)
                 {
@@ -278,7 +278,7 @@ const schema = new GraphQLSchema({
           requestlist : {
             type : GraphQLList(RequestDetailsType),
             resolve : (root, args, context, info) => {
-              return Requests.find({}).exec();
+              return Requests.find({"sys.spaceId" : context.clientId}).exec();
             }
           },
           request : {
@@ -322,7 +322,7 @@ const schema = new GraphQLSchema({
           contentlist : {
             type : GraphQLList(ContentDetailType),
             resolve : (root, args, context, info) => {
-              return Contents.find({}).exec();
+              return Contents.find({"sys.spaceId" : context.clientId}).exec();
             }
           },
           content : {
@@ -339,7 +339,7 @@ const schema = new GraphQLSchema({
           contentTypes : {
             type : GraphQLList(ContentTypeType),
             resolve : (root, args, context, info) => {
-              return ContentTypes.find({}).populate().exec();
+              return ContentTypes.find({"sys.spaceId" : context.clientId}).populate().exec();
             }
           },
           contentType : {
