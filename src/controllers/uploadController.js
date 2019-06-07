@@ -1,22 +1,27 @@
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 const broker = require('./serviceBroker');
+var Contents = require('../models/content');
+var Requests = require('../models/request');
+var uniqid = require('uniqid')
 
-exports.submitRequest = function(req, res, next) {
-    var request = new Requests({
+exports.submitRequest = async function(req, cb) {
+    var request = await Requests.findOne({"sys.link" : req.body.request}).exec();
+    if (!request)
+    {
+        result.success = false;
+        result.data =  undefined;
+        result.error = "Invalid request";
+        return result;
+    }
+    var content = new Contents({
         sys : {},
-        contentType : req.body.contentType,
-        category : req.body.category,
-        title : req.body.title,
-        description : req.body.description,
-        longDesc : {},
-        longDesc : req.body.longDesc,
-        thumbnail : req.body.thumbnail,
-        attachments : req.body.attachments,
-        receiver : req.body.receiver,
+        fields: req.body.fields,
+        contentType : request.contentType,
+        category : request.category,
+        requestId : request._id,
         status : "draft",
-        statusLog : [],
-        settings : req.body.settings
+        statusLog : []
     });
 
     var newStatus = {}
@@ -24,30 +29,31 @@ exports.submitRequest = function(req, res, next) {
     newStatus.applyDate = new Date();
     newStatus.user = req.userId;
     newStatus.description = "Item created";
-    request.status = "draft";
-    request.statusLog.push(newStatus);
+    content.status = "draft";
+    content.statusLog.push(newStatus);
 
-    request.sys.type = "request";
-    request.sys.link = uniqid();
-    request.sys.spaceId = req.spaceid;
-    request.sys.issuer = req.userId;
-    request.sys.issueDate = new Date();
-    request.sys.spaceId = req.spaceId;
-    request.save(function(err){
+    content.sys.type = "content";
+    content.sys.link = uniqid();
+    content.sys.spaceId = req.spaceid;
+    content.sys.issuer = req.userId;
+    content.sys.issueDate = new Date();
+
+    content.save(function(err){
         var result = {success : false, data : null, error : null };
         if (err)
         {
             result.success = false;
             result.data =  undefined;
             result.error = err;
-            cb(result);       
-            return; 
+            return result; 
         }
         //Successfull. 
         //Publish user registered event
         result.success = true;
         result.error = undefined;
-        result.data =  request;
-        cb(result); 
+        result.data =  content;
+        return result; 
     });
+
+
 }

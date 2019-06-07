@@ -188,10 +188,9 @@ const CategroyType = new GraphQLObjectType({
 const submitrequestinput = new GraphQLInputObjectType({
   name: "submitrequestinput",
   fields: {
-    request : {type: GraphQLJSONObject },
+    request : {type: GraphQLString },
     fields : {type : GraphQLJSONObject},
-    contentType : {type: GraphQLString},
-    category : {type: GraphQLString}
+    userinfo : {type : GraphQLJSONObject}
   }
 });
 const schema = new GraphQLSchema({
@@ -364,9 +363,16 @@ const schema = new GraphQLSchema({
           args: {
               input: { type: submitrequestinput }
           },
-          resolve:  async function (source, args) {
-            console.log('start saving request : ' + args);
-            controller.submitRequest({clientId : "", body : args});
+          resolve:  async function (root, args, context, info) {
+            console.log('start saving request : ' + JSON.stringify(args));
+            await controller.submitRequest({userId : context.userId, spaceid : context.clientId, body : args.input}, (result)=>{
+              if (result.success)
+              {
+                return result.data;
+              }
+              return undefined;
+            });
+
           }
         }
     }

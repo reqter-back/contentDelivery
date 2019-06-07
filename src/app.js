@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 db();
-app.post('/graphql', graphqlHTTP({
+app.post('/graphql', auth.verifyToken, graphqlHTTP({
     schema,
     graphiql: false,
     pretty : true
