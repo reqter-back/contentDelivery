@@ -6,6 +6,7 @@ var Requests = require('../models/request');
 var uniqid = require('uniqid')
 
 exports.submitRequest = async function(req, cb) {
+    console.log(req);
     var request = await Requests.findOne({"sys.link" : req.body.request}).exec();
     if (!request)
     {
@@ -46,6 +47,7 @@ exports.submitRequest = async function(req, cb) {
             result.success = false;
             result.data =  undefined;
             result.error = err;
+            console.log(err);
             return result; 
         }
         //Successfull. 
