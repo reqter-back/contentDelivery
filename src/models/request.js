@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var sysfld = require('./sys');
 var Status = require('./status');
 var Schema = mongoose.Schema;
+var mongoosePaginate = require('mongoose-paginate');
  
 var request = new Schema({
     sys : {type : sysfld, required : true},
@@ -18,4 +19,5 @@ var request = new Schema({
     settings : {type : Object}
 });
 
+request.plugin(mongoosePaginate);
 module.exports = mongoose.model("Request", request);

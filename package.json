@@ -45,6 +45,7 @@
     "merge-graphql-schemas": "1.5.8",
     "mongodb": "3.2.6",
     "mongoose": "5.5.12",
+    "mongoose-paginate": "5.0.3",
     "morgan": "1.9.1",
     "path": "0.12.7",
     "uniqid": "5.0.3",

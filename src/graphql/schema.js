@@ -13,7 +13,8 @@ const {
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLBoolean,
-  GraphQLInputObjectType
+  GraphQLInputObjectType,
+  GraphQLFloat
 } = require("graphql");
 
 function buildTree(parent, list)
@@ -247,7 +248,9 @@ const schema = new GraphQLSchema({
             args : {
               category : {type : GraphQLString},
               contenttype : {type : GraphQLString},
-              name : {type : GraphQLString}
+              name : {type : GraphQLString},
+              page : {type : GraphQLFloat},
+              limit : {type : GraphQLFloat}
             },
             resolve : async (root, args, context, info) => {
               var c= undefined, ct, st;
@@ -272,7 +275,17 @@ const schema = new GraphQLSchema({
               if (!args.contenttype)
                   delete flt.contentType;
               console.log(flt);
-              return Requests.find(flt).exec();
+              var options = {};
+              if (args.page && args.page > 0)
+                options.page = args.page;
+              else
+                options.page = 1;
+              if (args.limit && args.limit > 0 && args.limit <= 500)
+                options.limit = args.limit;
+              else
+                options.imit = 10;
+              
+             return Requests.find(flt).exec();
             }
           },
           requestlist : {
