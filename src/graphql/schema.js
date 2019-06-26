@@ -1,7 +1,5 @@
 const Asset = require('../models/asset');
-const Categories = require('../models/category');
 const ContentTypes = require('../models/contentType');
-const Requests = require('../models/request');
 const Contents = require('../models/content');
 var controller = require('../controllers/uploadController');
 const {GraphQLJSONObject} = require('graphql-type-json');
@@ -67,20 +65,7 @@ const AssetType = new GraphQLObjectType({
   }
 });
 
-const CategroyType = new GraphQLObjectType({
-    name: "Category",
-    fields: {
-        _id : {type : GraphQLID},
-        sys : {type : SysType},
-        name: { type: MultiLangItemType },
-        shortDesc: { type: MultiLangItemType },
-        code : {type:GraphQLString},
-        longDesc : {type : MultiLangItemType},
-        image : {type : MultiLangItemType},
-        items : {type : GraphQLList(GraphQLJSONObject)},
-        parentId : { type: GraphQLString},
-    }
-  });
+
   const ContentTypeType = new GraphQLObjectType({
     name: "ContentType",
     fields: {
@@ -105,7 +90,6 @@ const CategroyType = new GraphQLObjectType({
         description : {type : MultiLangItemType},
         contentType : {type: GraphQLString},
         longDesc : {type : MultiLangItemType},
-        category : {type: GraphQLString},
         thumbnail : {type : GraphQLList(MultiLangItemType)},
         attachments : {type : GraphQLList(MultiLangItemType)},
         receiver : {type : GraphQLString},
@@ -129,16 +113,6 @@ const CategroyType = new GraphQLObjectType({
               return data;
             }
         },
-        category : {type: CategroyType,
-            resolve : (root, args, context, info)=>{
-                if (root.category)
-                {
-                    var   data = Categories.findById({"_id" : root.category}).exec();
-                    return data;
-                }
-                return null;
-            }
-        },
         thumbnail : {type : GraphQLList(MultiLangItemType)},
         attachments : {type : GraphQLList(MultiLangItemType)},
         receiver : {type : GraphQLString},
@@ -151,11 +125,9 @@ const CategroyType = new GraphQLObjectType({
     fields: {
         _id : {type : GraphQLID},
       sys : {type : SysType},
-      request : {type: RequestType },
       fields : {type : GraphQLJSONObject},
       status : {type : GraphQLString},
       contentType : {type: GraphQLString},
-      category : {type: GraphQLString}
     }
   });
 
@@ -164,7 +136,6 @@ const CategroyType = new GraphQLObjectType({
     fields: {
       _id : {type : GraphQLID},
       sys : {type : SysType},
-      request : {type: RequestType },
       fields : {type : GraphQLJSONObject},
       status : {type : GraphQLString},
       contentType : {
@@ -173,27 +144,10 @@ const CategroyType = new GraphQLObjectType({
             var data = ContentTypes.findById({"_id" : root.contentType}).exec();
             return data;
           }
-    },
-      category : {type: CategroyType,
-        resolve : (root, args, context, info)=>{
-            if (root.category)
-            {
-                var   data = Categories.findById({"_id" : root.category}).exec();
-                return data;
-            }
-            return null;
-        }}
+      },
     }
   });
 
-const submitrequestinput = new GraphQLInputObjectType({
-  name: "submitrequestinput",
-  fields: {
-    request : {type: GraphQLString },
-    fields : {type : GraphQLJSONObject},
-    userinfo : {type : GraphQLJSONObject}
-  }
-});
 const schema = new GraphQLSchema({
     query : new GraphQLObjectType({
         name : "Query",
@@ -214,118 +168,22 @@ const schema = new GraphQLSchema({
               return data;
             }
           },
-          categories : {
-            type : GraphQLList(CategroyType),
-            resolve : async(root, args, context, info) => {
-              var rootc = [];
-              var cts = await Categories.find({"sys.spaceId" : context.clientId}).exec();
-                console.log(cts);
-                for(i = 0; i < cts.length;i++)
-                {
-                  var cat =cts[i];
-                  if (cat.parentId === undefined || cat.parentId === null)
-                  {
-                      rootc.push(cat);
-                      buildTree(cat, cts);
-                  }
-                  cat.longDesc = undefined;
-                }
-
-                return rootc;
-            }
-          },
-          category : {
-            type : CategroyType,
-            args : {
-              id : {type : GraphQLNonNull(GraphQLID)}
-            },
-            resolve : (root, args, context, info)=>{
-              return Categories.findById(args.id).exec();
-            }
-          },
-          requests : {
-            type : GraphQLList(RequestType),
-            args : {
-              category : {type : GraphQLString},
-              contenttype : {type : GraphQLString},
-              name : {type : GraphQLString},
-              page : {type : GraphQLFloat},
-              limit : {type : GraphQLFloat}
-            },
-            resolve : async (root, args, context, info) => {
-              var c= undefined, ct, st;
-              if (args.category)
-              {
-                console.log(args.category);
-                  var cat = await Categories.findOne({"sys.link" : args.category});
-                  console.log(cat);
-                  c =  cat._id;
-              }
-              if (args.contenttype)
-                  ct = args.contenttype;
-              var flt = {
-                  'sys.spaceId' : context.clientId,
-                  category : c ,
-                  contentType : ct
-              };
-              if (!args.name)
-                  delete flt.name;
-              if (!args.category)
-                  delete flt.category;
-              if (!args.contenttype)
-                  delete flt.contentType;
-              console.log(flt);
-              var options = {};
-              if (args.page && args.page > 0)
-                options.page = args.page;
-              else
-                options.page = 1;
-              if (args.limit && args.limit > 0 && args.limit <= 500)
-                options.limit = args.limit;
-              else
-                options.imit = 10;
-              
-             return Requests.find(flt).exec();
-            }
-          },
-          requestlist : {
-            type : GraphQLList(RequestDetailsType),
-            resolve : (root, args, context, info) => {
-              return Requests.find({"sys.spaceId" : context.clientId}).exec();
-            }
-          },
-          request : {
-            type : RequestDetailsType,
-            args : {
-              link : {type : GraphQLNonNull(GraphQLString)}
-            },
-            resolve : (root, args, context, info)=>{
-              var data = Requests.findOne({"sys.link" : args.link}).exec();
-              return data;
-            }
-          },
           contents : {
             type : GraphQLList(ContentType),
             args : {
-                category : {type : GraphQLString},
                 contentType : {type : GraphQLString},
                 name : {type : GraphQLString}
               },
             resolve : (root, args, context, info) => {
               var c= undefined, ct, st;
-              if (args.category)
-                  c = args.category.split(',');
               if (args.contentType)
                   ct = args.contentType.split(',');
               var flt = {
                   'sys.spaceId' : req.spaceId,
-                  category : { $in : c} ,
                   contentType : { $in : ct},
               };
               if (!args.name)
                   delete flt.name;
-              if (!args.category)
-                  delete flt.category;
               if (!args.contentType)
                   delete flt.contentType;
               console.log(flt);
@@ -374,17 +232,17 @@ const schema = new GraphQLSchema({
         submit :{
           type: ContentType,
           args: {
-              input: { type: submitrequestinput }
+              
           },
           resolve:  async function (root, args, context, info) {
-            console.log('start saving request : ' + JSON.stringify(args));
-            await controller.submitRequest({userId : context.userId, spaceid : context.clientId, body : args.input}, (result)=>{
-              if (result.success)
-              {
-                return result.data;
-              }
-              return undefined;
-            });
+            // console.log('start saving request : ' + JSON.stringify(args));
+            // await controller.submitRequest({userId : context.userId, spaceid : context.clientId, body : args.input}, (result)=>{
+            //   if (result.success)
+            //   {
+            //     return result.data;
+            //   }
+            //   return undefined;
+            // });
 
           }
         }

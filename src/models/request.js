@@ -10,7 +10,6 @@ var request = new Schema({
     description : {type : Object},
     longDesc : {type : Object},
     contentType : {type: Schema.Types.ObjectId, ref: 'ContentType' , required : true},
-    category : {type: Schema.Types.ObjectId, ref: 'Category'},
     thumbnail : [Object],
     attachments : [Object],
     receiver : {type : String},
