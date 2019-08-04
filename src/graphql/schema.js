@@ -140,7 +140,8 @@ const schema = new GraphQLSchema({
                   ct = args.contentType.split(',');
               var flt = {
                   'sys.spaceId' : context.clientId,
-                  contentType : { $in : ct}
+                  contentType : { $in : ct},
+                  template : args.template
               };
               if (args.fields)
               {
@@ -151,6 +152,8 @@ const schema = new GraphQLSchema({
               }
               if (!args.fields)
                   delete flt.fields;
+              if (!args.template)
+                  delete flt.template;
               if (!args.contentType)
                   delete flt.contentType;
               console.log(flt);
