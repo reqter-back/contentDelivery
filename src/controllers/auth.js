@@ -1,6 +1,14 @@
 var jwt = require('jsonwebtoken');
 const config = require('../config');
+const async = require('async');
+const Contents = require('../models/content');
+const ContentTypes = require('../models/contentType');
+const Spaces = require('../models/space');
 
+function loadHeaders(req, res, next) {
+  req.clientId = req.headers.clientid;
+  next();
+}
 function verifyToken(req, res, next) {
     var token = req.headers['authorization'];
     if (token === null || token == undefined)
@@ -23,6 +31,7 @@ function verifyToken(req, res, next) {
       console.log("auth : " + JSON.stringify(decoded));
       next();
     });
-  }
+}
 
-  exports.verifyToken = verifyToken;
+ exports.loadHeaders = loadHeaders;
+ exports.verifyToken = verifyToken;

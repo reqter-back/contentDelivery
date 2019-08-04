@@ -1,7 +1,6 @@
 const Asset = require('../models/asset');
 const ContentTypes = require('../models/contentType');
 const Contents = require('../models/content');
-var controller = require('../controllers/uploadController');
 const {GraphQLJSONObject} = require('graphql-type-json');
 const {
   GraphQLID,
@@ -10,9 +9,7 @@ const {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
-  GraphQLBoolean,
-  GraphQLInputObjectType,
-  GraphQLFloat
+  GraphQLBoolean
 } = require("graphql");
 
 function buildTree(parent, list)
@@ -81,45 +78,7 @@ const AssetType = new GraphQLObjectType({
     }
   });
 
-  const RequestType = new GraphQLObjectType({
-    name: "Request",
-    fields: {
-        _id : {type : GraphQLID},
-        sys : {type : SysType},
-        title : {type : MultiLangItemType},
-        description : {type : MultiLangItemType},
-        contentType : {type: GraphQLString},
-        longDesc : {type : MultiLangItemType},
-        thumbnail : {type : GraphQLList(MultiLangItemType)},
-        attachments : {type : GraphQLList(MultiLangItemType)},
-        receiver : {type : GraphQLString},
-        status : {type : GraphQLString},
-        settings : {type : GraphQLJSONObject}
-    }
-  });
 
-  const RequestDetailsType = new GraphQLObjectType({
-    name: "RequestDetails",
-    fields: {
-        _id : {type : GraphQLID},
-        sys : {type : SysType},
-        title : {type : MultiLangItemType},
-        longDesc : {type : MultiLangItemType},
-        description : {type : MultiLangItemType},
-        contentType : {
-            type: ContentTypeType,
-            resolve : (root, args, context, info)=>{
-              var data = ContentTypes.findById({"_id" : root.contentType}).exec();
-              return data;
-            }
-        },
-        thumbnail : {type : GraphQLList(MultiLangItemType)},
-        attachments : {type : GraphQLList(MultiLangItemType)},
-        receiver : {type : GraphQLString},
-        status : {type : GraphQLString},
-        settings : {type : GraphQLJSONObject}
-    }
-  });
   const ContentType = new GraphQLObjectType({
     name: "Content",
     fields: {
@@ -172,18 +131,26 @@ const schema = new GraphQLSchema({
             type : GraphQLList(ContentType),
             args : {
                 contentType : {type : GraphQLString},
-                name : {type : GraphQLString}
+                fields : {type : GraphQLJSONObject}
               },
             resolve : (root, args, context, info) => {
               var c= undefined, ct, st;
+              console.log(context);
               if (args.contentType)
                   ct = args.contentType.split(',');
               var flt = {
-                  'sys.spaceId' : req.spaceId,
-                  contentType : { $in : ct},
+                  'sys.spaceId' : context.clientId,
+                  contentType : { $in : ct}
               };
-              if (!args.name)
-                  delete flt.name;
+              if (args.fields)
+              {
+                Object.keys(args.fields).forEach(function(key) {
+                  var val = args.fields[key];
+                  flt["fields." + key] = val;
+                });
+              }
+              if (!args.fields)
+                  delete flt.fields;
               if (!args.contentType)
                   delete flt.contentType;
               console.log(flt);
@@ -220,6 +187,17 @@ const schema = new GraphQLSchema({
             },
             resolve : (root, args, context, info)=>{
               var data = ContentTypes.findOne({"sys.link" : args.link}).exec();
+              console.log(data);
+              return data;
+            }
+          },
+          contentTypeByID : {
+            type : ContentTypeType,
+            args : {
+              id : {type : GraphQLNonNull(GraphQLString)}
+            },
+            resolve : (root, args, context, info)=>{
+              var data = ContentTypes.findById(args.id).exec();
               console.log(data);
               return data;
             }
