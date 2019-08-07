@@ -132,7 +132,7 @@ const schema = new GraphQLSchema({
             args : {
                 contentType : {type : GraphQLString},
                 fields : {type : GraphQLJSONObject},
-                template : {type : GraphQLString}
+                status : {type : GraphQLString}
               },
             resolve : (root, args, context, info) => {
               var c= undefined, ct, st;
@@ -141,7 +141,7 @@ const schema = new GraphQLSchema({
               var flt = {
                   'sys.spaceId' : context.clientId,
                   contentType : { $in : ct},
-                  template : args.template
+                  status : args.status
               };
               if (args.fields)
               {
@@ -152,8 +152,8 @@ const schema = new GraphQLSchema({
               }
               if (!args.fields)
                   delete flt.fields;
-              if (!args.template)
-                  delete flt.template;
+              if (!args.status)
+                  delete flt.status;
               if (!args.contentType)
                   delete flt.contentType;
               console.log(flt);
