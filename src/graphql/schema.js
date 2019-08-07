@@ -131,7 +131,8 @@ const schema = new GraphQLSchema({
             type : GraphQLList(ContentType),
             args : {
                 contentType : {type : GraphQLString},
-                fields : {type : GraphQLJSONObject}
+                fields : {type : GraphQLJSONObject},
+                template : {type : GraphQLString}
               },
             resolve : (root, args, context, info) => {
               var c= undefined, ct, st;
