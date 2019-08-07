@@ -6,7 +6,7 @@
 
 var app = require('../app');
 var http = require('http');
-var broker = require('../controllers/serviceBroker')
+var broker = require('../controllers/serviceBroker');
 /**
  * Get port from environment and store in Express.
  */

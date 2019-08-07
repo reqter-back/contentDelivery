@@ -135,7 +135,6 @@ const schema = new GraphQLSchema({
               },
             resolve : (root, args, context, info) => {
               var c= undefined, ct, st;
-              console.log(context);
               if (args.contentType)
                   ct = args.contentType.split(',');
               var flt = {
