@@ -233,13 +233,13 @@ const schema = new GraphQLSchema({
           if (args.fields) {
             Object.keys(args.fields).forEach(function(key) {
               var val = args.fields[key];
-              flt["fields." + key] = val;
+              flt['"fields.' + key + '"'] = val;
             });
           }
           if (!args.fields) delete flt.fields;
           if (!args.status) delete flt.status;
           if (!args.contentType) delete flt.contentType;
-          console.log(flt);
+          console.log(JSON.stringify(flt));
           return Contents.find(flt).exec();
         }
       },
