@@ -80,11 +80,39 @@ exports.filter = function(req, res, next) {
             .select("fields _id")
             .exec((err, rels) => {
               if (err) {
-                res.status(500).send({ success: false, error: err });
+                res.send({ contents: cts, reldata: [] });
                 return;
               }
-              var result = { contents: cts, reldata: rels };
-              res.send(result);
+              relfields.forEach(fld => {
+                cts.forEach(content => {
+                  if (
+                    content.fields[fld.name] &&
+                    content.fields[fld.name].length > 0
+                  ) {
+                    if (isArray(content.fields[fld.name])) {
+                      for (i = 0; i < content.fields[fld.name].length; i++) {
+                        var item = content.fields[fld.name][i];
+                        var row = rels.filter(
+                          a => a._id.toString() === item.toString()
+                        );
+                        if (row.length > 0) {
+                          content.fields[fld.name][i] = row[0];
+                        }
+                      }
+                    } else {
+                      var row = rels.filter(
+                        a =>
+                          a._id.toString() ===
+                          content.fields[fld.name].toString()
+                      );
+                      if (row.length > 0) {
+                        content.fields[fld.name] = row[0];
+                      }
+                    }
+                  }
+                });
+              });
+              res.send(cts);
             });
         }
       });
