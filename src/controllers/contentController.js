@@ -10,25 +10,25 @@ exports.filter = function(req, res, next) {
     ct,
     st;
   if (!req.query.contentType) throw new Error("Invalid contentType");
-  if (req.query.contentType) ct = req.query.contentType;
-  var flt = {
-    "sys.spaceId": req.clientId,
-    contentType: req.query.contentType,
-    status: req.query.status
-  };
-  if (req.query.fields) {
-    var js = JSON.parse(req.query.fields);
-    if (js) {
-      for (var key in js) {
-        var val = js[key];
-        flt["fields." + key] = val;
-      }
-    }
-  }
-  if (!req.query.fields) delete flt.fields;
-  if (!req.query.status) delete flt.status;
-  console.log(flt);
-  Contents.find(flt)
+  // if (req.query.contentType) ct = req.query.contentType;
+  // var flt = {
+  //   "sys.spaceId": req.clientId,
+  //   contentType: req.query.contentType,
+  //   status: req.query.status
+  // };
+  // if (req.query.fields) {
+  //   var js = JSON.parse(req.query.fields);
+  //   if (js) {
+  //     for (var key in js) {
+  //       var val = js[key];
+  //       flt["fields." + key] = val;
+  //     }
+  //   }
+  // }
+  // if (!req.query.fields) delete flt.fields;
+  // if (!req.query.status) delete flt.status;
+  console.log(req.query);
+  Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
     .exec((err, cts) => {
       if (err) {
