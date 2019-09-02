@@ -99,6 +99,18 @@ exports.filter = function(req, res, next) {
     });
 };
 
+exports.query = function(req, res, next) {
+  console.log(req.query);
+  Contents.find(req.query)
+    .select("fields sys.issuer, sys.issueDate _id, status")
+    .exec((err, cts) => {
+      if (err) {
+        res.status(500).send({ success: false, error: err });
+        return;
+      }
+      res.send(cts);
+    });
+};
 function loadRelations(content, callback) {
   ContentTypes.findById(content.contentType).exec((err, ctype) => {
     if (err) {
