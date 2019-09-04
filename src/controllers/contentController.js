@@ -10,6 +10,7 @@ exports.filter = function(req, res, next) {
   console.log(req.query);
   Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
+    .populate("contentType")
     .exec((err, cts) => {
       if (err) {
         res.status(500).send({ success: false, error: err });
@@ -103,6 +104,7 @@ exports.query = function(req, res, next) {
   console.log(req.query);
   Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
+    .populate("contentType")
     .exec((err, cts) => {
       if (err) {
         res.status(500).send({ success: false, error: err });
