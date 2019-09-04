@@ -9,11 +9,11 @@ exports.filter = function(req, res, next) {
   if (!req.query.contentType) throw new Error("Invalid contentType");
   console.log(req.query);
   var skip = req.query.skip || 0;
-  req.query.skip = undefined;
+  delete req.query.skip;
   var limit = req.query.limit || 100;
-  req.query.limit = undefined;
+  delete req.query.limit;
   var sort = req.query.sort || "sys.issueDate";
-  req.query.sort = undefined;
+  delete req.query.sort;
   Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
     .populate("contentType")
@@ -112,11 +112,11 @@ exports.filter = function(req, res, next) {
 exports.query = function(req, res, next) {
   console.log(req.query);
   var skip = req.query.skip || 0;
-  req.query.skip = undefined;
+  delete req.query.skip;
   var limit = req.query.limit || 100;
-  req.query.limit = undefined;
+  delete req.query.limit;
   var sort = req.query.sort || "sys.issueDate";
-  req.query.sort = undefined;
+  delete req.query.sort;
   Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
     .populate("contentType")
