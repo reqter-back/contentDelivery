@@ -111,9 +111,9 @@ exports.filter = function(req, res, next) {
 
 exports.query = function(req, res, next) {
   console.log(req.query);
-  var skip = req.query.skip || 0;
+  var skip = parseInt(req.query.skip) || 0;
   delete req.query.skip;
-  var limit = req.query.limit || 100;
+  var limit = parseInt(req.query.limit) || 100;
   delete req.query.limit;
   var sort = req.query.sort || "sys.issueDate";
   delete req.query.sort;
