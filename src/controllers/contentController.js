@@ -8,9 +8,18 @@ function isArray(obj) {
 exports.filter = function(req, res, next) {
   if (!req.query.contentType) throw new Error("Invalid contentType");
   console.log(req.query);
+  var skip = req.query.skip || 0;
+  req.query.skip = undefined;
+  var limit = req.query.limit || 100;
+  req.query.limits = undefined;
+  var sort = req.query.sort || "sys.issueDate";
+  req.query.sort = undefined;
   Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
     .populate("contentType")
+    .skip(skip)
+    .limit(limit)
+    .sort(sort)
     .exec((err, cts) => {
       if (err) {
         res.status(500).send({ success: false, error: err });
@@ -102,9 +111,18 @@ exports.filter = function(req, res, next) {
 
 exports.query = function(req, res, next) {
   console.log(req.query);
+  var skip = req.query.skip || 0;
+  req.query.skip = undefined;
+  var limit = req.query.limit || 100;
+  req.query.limits = undefined;
+  var sort = req.query.sort || "sys.issueDate";
+  req.query.sort = undefined;
   Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
     .populate("contentType")
+    .skip(skip)
+    .limit(limit)
+    .sort(sort)
     .exec((err, cts) => {
       if (err) {
         res.status(500).send({ success: false, error: err });
