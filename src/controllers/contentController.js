@@ -11,7 +11,7 @@ exports.filter = function(req, res, next) {
   var skip = req.query.skip || 0;
   req.query.skip = undefined;
   var limit = req.query.limit || 100;
-  req.query.limits = undefined;
+  req.query.limit = undefined;
   var sort = req.query.sort || "sys.issueDate";
   req.query.sort = undefined;
   Contents.find(req.query)
@@ -114,7 +114,7 @@ exports.query = function(req, res, next) {
   var skip = req.query.skip || 0;
   req.query.skip = undefined;
   var limit = req.query.limit || 100;
-  req.query.limits = undefined;
+  req.query.limit = undefined;
   var sort = req.query.sort || "sys.issueDate";
   req.query.sort = undefined;
   Contents.find(req.query)
