@@ -193,13 +193,13 @@ exports.query = function(req, res, next) {
                   res.send(cts);
                   return;
                 }
-                for (var j = 0; j < ttypes.length; j++) {
-                  var ctype = ttypes[j];
+                for (var l = 0; l < ttypes.length; l++) {
+                  var ctype = ttypes[l];
                   relfields = relfieldarr[ctype._id.toString()];
                   console.log(relfields);
                   relfields.forEach(fld => {
-                    for (var i = 0; i < cts.length; i++) {
-                      content = cts[i];
+                    for (var s = 0; s < cts.length; s++) {
+                      content = cts[s];
                       if (
                         content.contentType._id.toString() ==
                         ctype._id.toString()
@@ -230,7 +230,6 @@ exports.query = function(req, res, next) {
                                   f = fld.select[j];
                                   rw.fileds[f] = row[0].fields[f];
                                 }
-                                console.log(rw);
                                 content.fields[fld.name] = rw;
                               }
                             }
