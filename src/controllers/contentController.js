@@ -214,7 +214,11 @@ exports.query = function(req, res, next) {
                             var row = rels.filter(
                               a => a._id.toString() === item.toString()
                             );
-                            if (row.length > 0) {
+                            if (
+                              row.length > 0 &&
+                              fld.select &&
+                              fld.select.length > 0
+                            ) {
                               var rw = {};
                               rw._id = row[0]._id;
                               rw.fields = {};
@@ -232,7 +236,11 @@ exports.query = function(req, res, next) {
                               a._id.toString() ===
                               content.fields[fld.name].toString()
                           );
-                          if (row.length > 0) {
+                          if (
+                            row.length > 0 &&
+                            fld.select &&
+                            fld.select.length > 0
+                          ) {
                             var rw = {};
                             rw.fields = {};
 
