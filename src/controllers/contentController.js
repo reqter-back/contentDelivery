@@ -128,91 +128,117 @@ exports.query = function(req, res, next) {
         res.status(500).send({ success: false, error: err });
         return;
       }
-      var ctypes = [];
-      for (var i = 0; i < cts.length; i++) {
-        var ct = cts[i].contentType._id.toString();
-        if (ctypes.indexOf(ct) == -1) ctypes.push(ct);
-      }
-      var relfieldarr = {};
-      var ids = [];
-      ContentTypes.find({ _id: { $in: ctypes } }).exec((err, ttypes) => {
-        if (err) {
-          res.send(cts);
-          return;
-        } else {
-          ttypes.forEach(ctype => {
-            var relfields = [];
-            for (var field in ctype.fields) {
-              if (ctype.fields[field].type === "reference") {
-                var references = ctype.fields[field].references;
-                if (references) {
-                  references.forEach(ref => {
-                    relfields.push({
-                      name: ctype.fields[field].name,
-                      ctype: ref,
-                      select: ctype.fields[field].fields
+      try {
+        var ctypes = [];
+        for (var i = 0; i < cts.length; i++) {
+          var ct = cts[i].contentType._id.toString();
+          if (ctypes.indexOf(ct) == -1) ctypes.push(ct);
+        }
+        var relfieldarr = {};
+        var ids = [];
+        ContentTypes.find({ _id: { $in: ctypes } }).exec((err, ttypes) => {
+          if (err) {
+            res.send(cts);
+            return;
+          } else {
+            ttypes.forEach(ctype => {
+              var relfields = [];
+              for (var field in ctype.fields) {
+                if (ctype.fields[field].type === "reference") {
+                  var references = ctype.fields[field].references;
+                  if (references) {
+                    references.forEach(ref => {
+                      relfields.push({
+                        name: ctype.fields[field].name,
+                        ctype: ref,
+                        select: ctype.fields[field].fields
+                      });
                     });
-                  });
+                  }
                 }
               }
-            }
-            relfieldarr[ctype._id.toString()] = relfields;
-            for (var i = 0; i < cts.length; i++) {
-              content = cts[i];
-              if (content.contentType._id.toString() == ctype._id.toString()) {
-                if (relfields.length > 0) {
-                  relfields.forEach(fld => {
-                    if (
-                      content.fields[fld.name] &&
-                      content.fields[fld.name].length > 0
-                    ) {
-                      if (isArray(content.fields[fld.name])) {
-                        content.fields[fld.name].forEach(item => {
-                          if (item.length > 0 && ids.indexOf(item) == -1)
-                            ids.push(item);
-                        });
-                      } else {
-                        if (ids.indexOf(content.fields[fld.name]) == -1)
-                          ids.push(content.fields[fld.name]);
-                      }
-                    }
-                  });
-                }
-              }
-            }
-          });
-          Contents.find({
-            _id: { $in: ids }
-          })
-            .select("fields _id")
-            .exec((err, rels) => {
-              if (err) {
-                res.send(cts);
-                return;
-              }
-              for (var j = 0; j < ttypes.length; j++) {
-                var ctype = ttypes[j];
-                relfields = relfieldarr[ctype._id.toString()];
-                console.log(relfields);
-                relfields.forEach(fld => {
-                  for (var i = 0; i < cts.length; i++) {
-                    content = cts[i];
-                    if (
-                      content.contentType._id.toString() == ctype._id.toString()
-                    ) {
+              relfieldarr[ctype._id.toString()] = relfields;
+              for (var i = 0; i < cts.length; i++) {
+                content = cts[i];
+                if (
+                  content.contentType._id.toString() == ctype._id.toString()
+                ) {
+                  if (relfields.length > 0) {
+                    relfields.forEach(fld => {
                       if (
                         content.fields[fld.name] &&
                         content.fields[fld.name].length > 0
                       ) {
                         if (isArray(content.fields[fld.name])) {
-                          for (
-                            i = 0;
-                            i < content.fields[fld.name].length;
-                            i++
-                          ) {
-                            var item = content.fields[fld.name][i];
+                          content.fields[fld.name].forEach(item => {
+                            if (item.length > 0 && ids.indexOf(item) == -1)
+                              ids.push(item);
+                          });
+                        } else {
+                          if (ids.indexOf(content.fields[fld.name]) == -1)
+                            ids.push(content.fields[fld.name]);
+                        }
+                      }
+                    });
+                  }
+                }
+              }
+            });
+            Contents.find({
+              _id: { $in: ids }
+            })
+              .select("fields _id")
+              .exec((err, rels) => {
+                if (err) {
+                  res.send(cts);
+                  return;
+                }
+                for (var j = 0; j < ttypes.length; j++) {
+                  var ctype = ttypes[j];
+                  relfields = relfieldarr[ctype._id.toString()];
+                  console.log(relfields);
+                  relfields.forEach(fld => {
+                    for (var i = 0; i < cts.length; i++) {
+                      content = cts[i];
+                      if (
+                        content.contentType._id.toString() ==
+                        ctype._id.toString()
+                      ) {
+                        if (
+                          content.fields[fld.name] &&
+                          content.fields[fld.name].length > 0
+                        ) {
+                          if (isArray(content.fields[fld.name])) {
+                            for (
+                              i = 0;
+                              i < content.fields[fld.name].length;
+                              i++
+                            ) {
+                              var item = content.fields[fld.name][i];
+                              var row = rels.filter(
+                                a => a._id.toString() === item.toString()
+                              );
+                              if (
+                                row.length > 0 &&
+                                fld.select &&
+                                fld.select.length > 0
+                              ) {
+                                var rw = {};
+                                rw._id = row[0]._id;
+                                rw.fields = {};
+                                for (var j = 0; j < fld.select.length; j++) {
+                                  f = fld.select[j];
+                                  rw.fileds[f] = row[0].fields[f];
+                                }
+                                console.log(rw);
+                                content.fields[fld.name] = rw;
+                              }
+                            }
+                          } else {
                             var row = rels.filter(
-                              a => a._id.toString() === item.toString()
+                              a =>
+                                a._id.toString() ===
+                                content.fields[fld.name].toString()
                             );
                             if (
                               row.length > 0 &&
@@ -220,48 +246,30 @@ exports.query = function(req, res, next) {
                               fld.select.length > 0
                             ) {
                               var rw = {};
-                              rw._id = row[0]._id;
                               rw.fields = {};
+
+                              rw._id = row[0]._id;
                               for (var j = 0; j < fld.select.length; j++) {
                                 f = fld.select[j];
-                                rw.fileds[f] = row[0].fields[f];
+                                rw.fields[f] = row[0].fields[f];
                               }
                               console.log(rw);
                               content.fields[fld.name] = rw;
                             }
                           }
-                        } else {
-                          var row = rels.filter(
-                            a =>
-                              a._id.toString() ===
-                              content.fields[fld.name].toString()
-                          );
-                          if (
-                            row.length > 0 &&
-                            fld.select &&
-                            fld.select.length > 0
-                          ) {
-                            var rw = {};
-                            rw.fields = {};
-
-                            rw._id = row[0]._id;
-                            for (var j = 0; j < fld.select.length; j++) {
-                              f = fld.select[j];
-                              rw.fields[f] = row[0].fields[f];
-                            }
-                            console.log(rw);
-                            content.fields[fld.name] = rw;
-                          }
                         }
                       }
                     }
-                  }
-                });
-              }
-              res.send(cts);
-            });
-        }
-      });
+                  });
+                }
+                res.send(cts);
+              });
+          }
+        });
+      } catch (e) {
+        console.log(e);
+        res.send(cts);
+      }
     });
 };
 function loadRelationFields(content, ids, callback) {}
