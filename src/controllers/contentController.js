@@ -228,9 +228,10 @@ exports.query = function(req, res, next) {
                                 rw.fields = {};
                                 for (var j = 0; j < fld.select.length; j++) {
                                   f = fld.select[j];
-                                  rw.fileds[f] = row[0].fields[f];
+                                  var c = row[0].fields[f];
+                                  rw.fields[f] = c;
                                 }
-                                content.fields[fld.name] = rw;
+                                content.fields[fld.name][i] = rw;
                               }
                             }
                           } else {
