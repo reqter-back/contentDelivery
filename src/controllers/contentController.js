@@ -12,7 +12,7 @@ exports.filter = function(req, res, next) {
   delete req.query.skip;
   var limit = req.query.limit || 100;
   delete req.query.limit;
-  var sort = req.query.sort || "sys.issueDate";
+  var sort = req.query.sort || "-sys.issueDate";
   delete req.query.sort;
   Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
@@ -39,7 +39,7 @@ exports.filter = function(req, res, next) {
                 relfields.push({
                   name: ctype.fields[field].name,
                   ctype: ref,
-                  select: ref.select
+                  select: ctype.fields[field].fields
                 });
               });
             }
@@ -115,7 +115,7 @@ exports.query = function(req, res, next) {
   delete req.query.skip;
   var limit = parseInt(req.query.limit) || 100;
   delete req.query.limit;
-  var sort = req.query.sort || "sys.issueDate";
+  var sort = req.query.sort || "-sys.issueDate";
   delete req.query.sort;
   Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
