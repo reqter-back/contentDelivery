@@ -240,7 +240,9 @@ const schema = new GraphQLSchema({
           if (!args.status) delete flt.status;
           if (!args.contentType) delete flt.contentType;
           console.log(JSON.stringify(flt));
-          return Contents.find(flt).exec();
+          return Contents.find(flt)
+            .sort("-sys.issueDate")
+            .exec();
         }
       },
       contentlist: {
