@@ -248,7 +248,9 @@ const schema = new GraphQLSchema({
       contentlist: {
         type: GraphQLList(ContentDetailType),
         resolve: (root, args, context, info) => {
-          return Contents.find({ "sys.spaceId": context.clientId }).exec();
+          return Contents.find({ "sys.spaceId": context.clientId })
+            .sort("-sys.issueDate")
+            .exec();
         }
       },
       content: {

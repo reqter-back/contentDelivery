@@ -8,9 +8,10 @@ function isArray(obj) {
 exports.filter = function(req, res, next) {
   if (!req.query.contentType) throw new Error("Invalid contentType");
   console.log(req.query);
-  var skip = req.query.skip || 0;
+  delete req.query.loadrelations;
+  var skip = parseInt(req.query.skip) || 0;
   delete req.query.skip;
-  var limit = req.query.limit || 100;
+  var limit = parseInt(req.query.limit) || 100;
   delete req.query.limit;
   var sort = req.query.sort || "-sys.issueDate";
   delete req.query.sort;
