@@ -17,7 +17,7 @@ exports.filter = function(req, res, next) {
   delete req.query.sort;
   Contents.find(req.query)
     .select("fields sys.issuer, sys.issueDate _id, status")
-    .populate("contentType")
+    .populate("contentType", "_id title")
     .skip(skip)
     .limit(limit)
     .sort(sort)
