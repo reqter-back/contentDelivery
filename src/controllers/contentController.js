@@ -158,6 +158,12 @@ exports.query = function(req, res, next) {
                           select: ctype.fields[field].fields
                         });
                       });
+                    } else {
+                      relfields.push({
+                        name: ctype.fields[field].name,
+                        ctype: ref,
+                        select: undefined
+                      });
                     }
                   }
                 }
