@@ -161,7 +161,7 @@ exports.query = function(req, res, next) {
                     } else {
                       relfields.push({
                         name: ctype.fields[field].name,
-                        ctype: ref,
+                        ctype: undefined,
                         select: undefined
                       });
                     }
