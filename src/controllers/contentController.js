@@ -71,7 +71,8 @@ exports.filter = function(req, res, next) {
             .select("fields _id")
             .exec((err, rels) => {
               if (err) {
-                res.send({ contents: cts, reldata: [] });
+                console.log(err);
+                res.send(cts);
                 return;
               }
               relfields.forEach(fld => {
