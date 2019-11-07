@@ -267,7 +267,7 @@ exports.query = function(req, res, next) {
                                   console.log(rw);
                                   content.fields[fld.name] = rw;
                                 } else {
-                                  content.fields = row[0];
+                                  content.fields[fld.name] = row[0];
                                 }
                               }
                             }
