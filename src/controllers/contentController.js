@@ -222,20 +222,24 @@ exports.query = function(req, res, next) {
                                 var row = rels.filter(
                                   a => a._id.toString() === item.toString()
                                 );
-                                if (
-                                  row.length > 0 &&
-                                  fld.select &&
-                                  fld.select.length > 0
-                                ) {
+                                if (row.length > 0) {
                                   var rw = {};
                                   rw._id = row[0]._id;
                                   rw.fields = {};
-                                  for (var j = 0; j < fld.select.length; j++) {
-                                    f = fld.select[j];
-                                    var c = row[0].fields[f];
-                                    rw.fields[f] = c;
+                                  if (fld.select && fld.select.length > 0) {
+                                    for (
+                                      var j = 0;
+                                      j < fld.select.length;
+                                      j++
+                                    ) {
+                                      f = fld.select[j];
+                                      var c = row[0].fields[f];
+                                      rw.fields[f] = c;
+                                    }
+                                    content.fields[fld.name][i] = rw;
+                                  } else {
+                                    content.fields[fld.name][i] = row[0];
                                   }
-                                  content.fields[fld.name][i] = rw;
                                 }
                               }
                             } else {
@@ -244,21 +248,21 @@ exports.query = function(req, res, next) {
                                   a._id.toString() ===
                                   content.fields[fld.name].toString()
                               );
-                              if (
-                                row.length > 0 &&
-                                fld.select &&
-                                fld.select.length > 0
-                              ) {
+                              if (row.length > 0) {
                                 var rw = {};
                                 rw.fields = {};
 
                                 rw._id = row[0]._id;
-                                for (var j = 0; j < fld.select.length; j++) {
-                                  f = fld.select[j];
-                                  rw.fields[f] = row[0].fields[f];
+                                if (fld.select && fld.select.length > 0) {
+                                  for (var j = 0; j < fld.select.length; j++) {
+                                    f = fld.select[j];
+                                    rw.fields[f] = row[0].fields[f];
+                                  }
+                                  console.log(rw);
+                                  content.fields[fld.name] = rw;
+                                } else {
+                                  content.fields = row[0];
                                 }
-                                console.log(rw);
-                                content.fields[fld.name] = rw;
                               }
                             }
                           }
