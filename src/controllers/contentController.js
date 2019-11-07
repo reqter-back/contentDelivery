@@ -1,6 +1,7 @@
 const broker = require("./serviceBroker");
 const Contents = require("../models/content");
 const ContentTypes = require("../models/contentType");
+const mongoose = require("mongoose");
 const async = require("async");
 function isArray(obj) {
   return Object.prototype.toString.call(obj) === "[object Array]";
@@ -57,10 +58,15 @@ exports.filter = function(req, res, next) {
               ) {
                 if (isArray(content.fields[fld.name])) {
                   content.fields[fld.name].forEach(item => {
-                    if (item.length > 0) ids.push(item);
+                    if (
+                      item.length > 0 &&
+                      mongoose.Types.ObjectId.isValid(item)
+                    )
+                      ids.push(item);
                   });
                 } else {
-                  ids.push(content.fields[fld.name]);
+                  if (mongoose.Types.ObjectId.isValid(content.fields[fld.name]))
+                    ids.push(content.fields[fld.name]);
                 }
               }
             });
@@ -182,12 +188,22 @@ exports.query = function(req, res, next) {
                         ) {
                           if (isArray(content.fields[fld.name])) {
                             content.fields[fld.name].forEach(item => {
-                              if (item.length > 0 && ids.indexOf(item) == -1)
+                              if (
+                                item.length > 0 &&
+                                ids.indexOf(item) == -1 &&
+                                mongoose.Types.ObjectId.isValid(item)
+                              )
                                 ids.push(item);
                             });
                           } else {
-                            if (ids.indexOf(content.fields[fld.name]) == -1)
-                              ids.push(content.fields[fld.name]);
+                            if (
+                              mongoose.Types.ObjectId.isValid(
+                                content.fields[fld.name]
+                              )
+                            ) {
+                              if (ids.indexOf(content.fields[fld.name]) == -1)
+                                ids.push(content.fields[fld.name]);
+                            }
                           }
                         }
                       });
