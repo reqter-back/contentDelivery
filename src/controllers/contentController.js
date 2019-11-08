@@ -74,7 +74,7 @@ exports.filter = function(req, res, next) {
           Contents.find({
             _id: { $in: ids }
           })
-            .select("fields _id")
+            .select("fields _id contentType")
             .exec((err, rels) => {
               if (err) {
                 console.log(err);
@@ -214,7 +214,7 @@ exports.query = function(req, res, next) {
               Contents.find({
                 _id: { $in: ids }
               })
-                .select("fields _id")
+                .select("fields _id contentType")
                 .exec((err, rels) => {
                   if (err) {
                     res.send(cts);
