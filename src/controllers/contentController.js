@@ -6,7 +6,7 @@ const async = require("async");
 function isArray(obj) {
   return Object.prototype.toString.call(obj) === "[object Array]";
 }
-exports.filter = function(req, res, next) {
+exports.filter = function (req, res, next) {
   if (!req.query.contentType) throw new Error("Invalid contentType");
   console.log(req.query);
   delete req.query.loadrelations;
@@ -74,7 +74,7 @@ exports.filter = function(req, res, next) {
           Contents.find({
             _id: { $in: ids }
           })
-            .select("fields _id contentType")
+            .select("fields _id contentType status")
             .exec((err, rels) => {
               if (err) {
                 console.log(err);
@@ -116,10 +116,10 @@ exports.filter = function(req, res, next) {
       });
     });
 };
-exports.test = function(req, res, next) {
+exports.test = function (req, res, next) {
   res.send({ hello: "world" });
 };
-exports.querytest = function(req) {
+exports.querytest = function (req) {
   console.log(req.query);
   var loadrelations = req.query.loadrelations == "false" ? false : true;
   delete req.query.loadrelations;
@@ -308,7 +308,7 @@ exports.querytest = function(req) {
       }
     });
 };
-exports.query = function(req, res, next) {
+exports.query = function (req, res, next) {
   console.log(req.query);
   var loadrelations = req.query.loadrelations == "false" ? false : true;
   delete req.query.loadrelations;
@@ -497,8 +497,8 @@ exports.query = function(req, res, next) {
       }
     });
 };
-function loadRelationFields(content, ids, callback) {}
-exports.loadByTemplate = function(req, res, next) {
+function loadRelationFields(content, ids, callback) { }
+exports.loadByTemplate = function (req, res, next) {
   if (!req.params.template) throw new Error("Invalid template name");
   if (req.params.template) ct = req.params.template;
   var ct = [];
