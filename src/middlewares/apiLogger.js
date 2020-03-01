@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Define a mongondb winston logger 
-const dbConnString = process.env.LOG_DB_CONNECTION_STRING || "mongodb+srv://backupLogDB:9SEnbWEu2qmGRYpo@cluster0-ljo1h.mongodb.net/backupLogDB?retryWrites=true&w=majority";
+const dbConnString = process.env.LOG_DB_CONNECTION_STRING || "mongodb+srv://reqter_default:PEnphxNjC8mcfBVu@cluster0-ljo1h.mongodb.net/contentDeliveryBackupLog?retryWrites=true&w=majority";
 
 const winstonApiLogger = winston.createLogger({
 	level: 'silly',
