@@ -10,8 +10,13 @@ var db = require("./db/init-db");
 var config = require("./config");
 const { schema } = require("./graphql/schema");
 var auth = require("./controllers/auth");
+let apiLogger = require("./middlewares/apiLogger");
 
 var app = express();
+
+// Overwrite res.send
+app.use(apiLogger);
+
 
 app.use(compression()); //Compress all routes
 app.use(helmet());
